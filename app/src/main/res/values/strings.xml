@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">List Pad</string>
+    <string name="create_new_list">Criar nova lista</string>
+    <string name="create_new_category">Criar nova categoria</string>
+    <string name="title_home">Início</string>
+    <string name="title_categories">Categorias</string>
+    <string name="title_settings">Configurações</string>
+    <string name="lists_title">Listas</string>
+    <string name="categories_title">Categorias</string>
+</resources>
