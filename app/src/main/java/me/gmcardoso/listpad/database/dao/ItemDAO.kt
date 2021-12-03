@@ -58,6 +58,26 @@ class ItemDAO(private var dbHelper: SQLiteOpenHelper) {
         return listOfItems
     }
 
+    fun getByDescription(_itemDescription: String, _listId: Int): ArrayList<Item> {
+        val listOfItems = ArrayList<Item>()
+        val db = dbHelper.writableDatabase
+        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE $DESCRIPTION = '$_itemDescription' AND $LIST_ID = '$_listId'"
+        val cursor = db.rawQuery(selectQuery, null)
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do{
+                    val item = Item(cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getInt(2),
+                        cursor.getInt(3))
+                    listOfItems.add(item)
+                }while(cursor.moveToNext())
+            }
+        }
+        cursor.close()
+        return listOfItems
+    }
+
     fun update(item: Item): Boolean {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {

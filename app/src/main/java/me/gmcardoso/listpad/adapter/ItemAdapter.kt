@@ -1,7 +1,5 @@
 package me.gmcardoso.listpad.adapter
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import me.gmcardoso.listpad.R
 import me.gmcardoso.listpad.model.Item
 import android.view.inputmethod.EditorInfo
+import androidx.cardview.widget.CardView
 
 class ItemAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
     var listener: ItemListener? = null
@@ -27,6 +26,16 @@ class ItemAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<Item
     override fun onBindViewHolder(holder: ItemAdapter.ItemViewHolder, position: Int) {
         val item = if(position < itemCount - 1) items[position] else null
 
+        holder.editableDescriptionVH.setOnFocusChangeListener { _, hasFocus ->
+            run {
+                if (hasFocus) {
+                    holder.itemConfirmButton.visibility = View.VISIBLE
+                } else {
+                    holder.itemConfirmButton.visibility = View.GONE
+                }
+            }
+        }
+
         if(position < itemCount - 1) {
             holder.editableDescriptionVH.setText(items[position].description)
             holder.descriptionVH.text = items[position].description
@@ -37,11 +46,11 @@ class ItemAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<Item
         }
 
         if(item != null && item.completed == 1) {
-            holder.editableDescriptionVH.visibility = View.GONE
+            holder.itemDescriptionLayout.visibility = View.GONE
             holder.descriptionVH.visibility = View.VISIBLE
             holder.isCompletedVH.isChecked = true
         } else {
-            holder.editableDescriptionVH.visibility = View.VISIBLE
+            holder.itemDescriptionLayout.visibility = View.VISIBLE
             holder.descriptionVH.visibility = View.GONE
             holder.isCompletedVH.isChecked = false
         }
@@ -52,33 +61,28 @@ class ItemAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<Item
     }
 
     inner class ItemViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val itemDescriptionLayout: LinearLayout = view.findViewById(R.id.llItemDescription)
+        val itemConfirmButton: CardView = view.findViewById(R.id.cvBtnConfirm)
         val editableDescriptionVH: EditText = view.findViewById(R.id.etItemDescription)
         val descriptionVH: TextView = view.findViewById(R.id.tvItemDescription)
         val isCompletedVH: CheckBox = view.findViewById(R.id.cbIsCompleted)
         val deleteIconVH: ImageView = view.findViewById(R.id.ivDeleteIcon)
 
         init {
+            itemConfirmButton.setOnClickListener {
+                listener?.onItemCreateOrUpdate(
+                    adapterPosition,
+                    editableDescriptionVH.text.toString()
+                )
+            }
             isCompletedVH.setOnClickListener { listener?.onItemCheck(adapterPosition) }
             deleteIconVH.setOnClickListener { listener?.onItemDelete(adapterPosition) }
-            editableDescriptionVH.addTextChangedListener(object: TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                    listener?.onItemDescriptionUpdated(adapterPosition, s.toString(), false)
-                }
-
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                }
-                })
 
             editableDescriptionVH.setOnEditorActionListener { textView, actionId, _ ->
                 var handled = false
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val itemDescription = textView.text
-                    listener?.onItemDescriptionUpdated(adapterPosition, itemDescription.toString(), true)
+                    listener?.onItemCreateOrUpdate(adapterPosition, itemDescription.toString())
                     handled = true
                 }
 
@@ -88,7 +92,7 @@ class ItemAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<Item
     }
 
     interface ItemListener {
-        fun onItemDescriptionUpdated(pos: Int, description: String, instantly: Boolean)
+        fun onItemCreateOrUpdate(pos: Int, description: String)
         fun onItemCheck(pos: Int)
         fun onItemDelete(pos: Int)
     }

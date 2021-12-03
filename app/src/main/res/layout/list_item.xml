@@ -86,7 +86,7 @@
 
             <ImageView
                 android:id="@+id/ivUrgentIcon"
-                android:src="@drawable/ic_error_black_24dp"
+                android:src="@drawable/ic_error_outline_black_24dp"
                 android:layout_width="24dp"
                 android:layout_height="24dp" />
 

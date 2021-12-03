@@ -2,6 +2,7 @@ package me.gmcardoso.listpad.database.dao
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import me.gmcardoso.listpad.model.List
 
 class ListDAO(private var dbHelper: SQLiteOpenHelper) {
@@ -27,18 +28,22 @@ class ListDAO(private var dbHelper: SQLiteOpenHelper) {
         return success
     }
 
-    fun get(_id: Int): List {
+    fun get(_id: Int): List? {
         val db = dbHelper.writableDatabase
         val selectQuery = "SELECT * FROM $TABLE_NAME WHERE $ID = $_id"
         val cursor = db.rawQuery(selectQuery, null)
-        cursor?.moveToFirst()
-        val list = List(cursor.getInt(0),
-            cursor.getString(1),
-            cursor.getString(2),
-            cursor.getInt(3),
-            cursor.getInt(4))
-        cursor.close()
-        return list
+        if(cursor != null && cursor.count > 0) {
+            cursor?.moveToFirst()
+            val list = List(cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getInt(3),
+                cursor.getInt(4))
+            cursor.close()
+            return list
+        }
+
+        return null
     }
 
     fun getByName(_listName: String): ArrayList<List> {

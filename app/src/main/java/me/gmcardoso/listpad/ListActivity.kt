@@ -1,12 +1,9 @@
 package me.gmcardoso.listpad
 
 import android.app.AlertDialog
-import android.content.DialogInterface
-import android.inputmethodservice.Keyboard
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import me.gmcardoso.listpad.adapter.ItemAdapter
@@ -15,7 +12,6 @@ import me.gmcardoso.listpad.database.dao.ItemDAO
 import me.gmcardoso.listpad.database.dao.ListDAO
 import me.gmcardoso.listpad.databinding.ActivityListBinding
 import me.gmcardoso.listpad.model.Item
-import java.util.*
 import kotlin.collections.ArrayList
 
 class ListActivity : AppCompatActivity() {
@@ -26,7 +22,6 @@ class ListActivity : AppCompatActivity() {
     private lateinit var databaseHandler: DatabaseHandler
     private lateinit var items: ArrayList<Item>
     private lateinit var itemAdapter: ItemAdapter
-    private var itemHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +39,18 @@ class ListActivity : AppCompatActivity() {
         updateUI()
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
     private fun updateUI() {
         val listId = this.intent.getIntExtra("listId", 0)
+
+        val list = listDAO.get(listId)
+        Log.d("EXISTE?", list.toString())
+        if(list == null) finish()
+
         items = itemDAO.getByList(listId)
         itemAdapter = ItemAdapter(items)
 
@@ -53,8 +58,10 @@ class ListActivity : AppCompatActivity() {
         activityListBinding.rvItems.adapter = itemAdapter
 
         activityListBinding.ivDeleteIcon.setOnClickListener { showDeleteListDialog() }
+        activityListBinding.ivEditIcon.setOnClickListener { showUpdateScreen() }
 
         val listener = object: ItemAdapter.ItemListener {
+
             override fun onItemCheck(pos: Int) {
                 completeItem(pos)
             }
@@ -63,20 +70,24 @@ class ListActivity : AppCompatActivity() {
                 deleteItem(pos)
             }
 
-            override fun onItemDescriptionUpdated(pos: Int, description: String, instantly: Boolean) {
-                val delayTime: Long = if(instantly) 0 else 1000
-                itemHandler.removeCallbacksAndMessages(null)
-                itemHandler.postDelayed({
-                    if(pos < items.size) {
-                        updateItem(pos, description)
-                    } else {
-                        createItem(description)
-                    }
-                }, delayTime)
+            override fun onItemCreateOrUpdate(pos: Int, description: String) {
+
+                if(pos < items.size) {
+                    updateItem(pos, description)
+                } else {
+                    createItem(description)
+                }
             }
         }
 
         itemAdapter.setOnClickListener(listener)
+    }
+
+    private fun showUpdateScreen() {
+        val listId = this.intent.getIntExtra("listId", 0)
+        val intent = Intent(this, CreateOrEditListActivity::class.java)
+        intent.putExtra("listId", listId)
+        startActivity(intent)
     }
 
     private fun completeItem(pos: Int) {
@@ -87,18 +98,39 @@ class ListActivity : AppCompatActivity() {
     }
 
     private fun createItem(description: String) {
-
+        val listId = this.intent.getIntExtra("listId", 0)
         if(description.isEmpty()) return
 
-        val listId = this.intent.getIntExtra("listId", 0)
+        val existingItems = itemDAO.getByDescription(description, listId)
+
+        if(existingItems.size > 0) {
+            AlertDialog.Builder(this)
+                .setTitle("Ação indisponível")
+                .setMessage("Não é possivel criar itens com descrição repetida, favor alterar o item a ser criado.")
+                .setNeutralButton("Entendi", null)
+                .show()
+            return
+        }
+
         val item = Item(null, description, 0, listId)
         itemDAO.save(item)
         updateUI()
     }
 
     private fun updateItem(pos: Int, description: String) {
+        val listId = this.intent.getIntExtra("listId", 0)
         if(description == items[pos].description) {
-            Log.d("AQUI", "DESCRICAO TA IGUAL ERA ANTES")
+            return
+        }
+
+        val existingItems = itemDAO.getByDescription(description, listId)
+
+        if(existingItems.size > 0) {
+            AlertDialog.Builder(this)
+                .setTitle("Ação indisponível")
+                .setMessage("Não é possivel criar itens com descrição repetida, favor alterar o item a ser criado.")
+                .setNeutralButton("Entendi", null)
+                .show()
             return
         }
 
@@ -128,7 +160,5 @@ class ListActivity : AppCompatActivity() {
         val listId = this.intent.getIntExtra("listId", 0)
         listDAO.delete(listId)
         finish()
-
-
     }
 }
