@@ -1,10 +1,31 @@
 <resources>
     <string name="app_name">List Pad</string>
     <string name="create_new_list">Criar nova lista</string>
+    <string name="new_list">Nova lista</string>
     <string name="create_new_category">Criar nova categoria</string>
+    <string name="new_category">Nova categoria</string>
     <string name="title_home">Início</string>
     <string name="title_categories">Categorias</string>
     <string name="title_settings">Configurações</string>
     <string name="lists_title">Listas</string>
     <string name="categories_title">Categorias</string>
+    <string name="edit_list">Editar Lista</string>
+    <string name="category_name">Nome da Categoria</string>
+    <string name="choose_color_for_category">Escolha uma cor para a categoria:</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Salvar</string>
+    <string name="is_it_urgent">É urgente?</string>
+    <string name="list_description">Descrição da Lista</string>
+    <string name="list_name">Nome da Lista</string>
+    <string name="delete_list">Excluir lista</string>
+    <string name="delete_list_confirmation_message">Deseja realmente excluir a lista selecionada?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="unavailable_action">Ação indisponível</string>
+    <string name="lists_with_same_name_message">Não é possivel criar listas com mesmo nome, favor alterar o nome da lista.</string>
+    <string name="understood">Entendi</string>
+    <string name="items_with_same_description_message">Não é possivel criar itens com mesma descrição, favor alterar a descrição do item.</string>
+    <string name="delete_category">Excluir categoria</string>
+    <string name="delete_category_message">Deseja realmente excluir a categoria selecionada?</string>
+    <string name="cant_delete_category_message">Não é possivel excluir a categoria, pois existem listas vinculadas a ela.</string>
 </resources>

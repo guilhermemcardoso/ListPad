@@ -12,9 +12,6 @@ import me.gmcardoso.listpad.databinding.ActivityCreateOrEditCategoryBinding
 import me.gmcardoso.listpad.model.Category
 import me.gmcardoso.listpad.model.Color
 import android.app.AlertDialog
-
-import android.content.DialogInterface
-import android.util.Log
 import me.gmcardoso.listpad.database.dao.ListDAO
 
 
@@ -107,27 +104,24 @@ class CreateOrEditCategoryActivity : AppCompatActivity() {
 
     private fun showDeleteDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Excluir categoria")
-            .setMessage("Deseja realmente excluir a categoria selecionada?")
+            .setTitle(getString(R.string.delete_category))
+            .setMessage(getString(R.string.delete_category_message))
             .setPositiveButton(
-                "Sim", DialogInterface.OnClickListener { _, _ -> deleteCategory() })
-            .setNegativeButton("Ní", null)
+                getString(R.string.yes)
+            ) { _, _ -> deleteCategory() }
+            .setNegativeButton(getString(R.string.no), null)
             .show()
     }
 
     private fun deleteCategory() {
-        Log.d("TESTE!", "TESTE")
         if(this::category.isInitialized) {
             val itemLists = listDAO.getByCategory(category.id!!)
 
-            Log.d("TESTE!", itemLists.size.toString())
-
-
             if(itemLists.size > 0) {
                 AlertDialog.Builder(this)
-                    .setTitle("Ação indisponível")
-                    .setMessage("Não é possivel excluir a categoria pois existem listas vinculadas a ela.")
-                    .setNeutralButton("Entendi", null)
+                    .setTitle(getString(R.string.unavailable_action))
+                    .setMessage(getString(R.string.cant_delete_category_message))
+                    .setNeutralButton(getString(R.string.understood), null)
                     .show()
             }
 

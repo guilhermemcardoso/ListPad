@@ -2,7 +2,6 @@ package me.gmcardoso.listpad.database.dao
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import me.gmcardoso.listpad.model.List
 
 class ListDAO(private var dbHelper: SQLiteOpenHelper) {

@@ -26,13 +26,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="4dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="8dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvListName"
                 android:elevation="2dp"
-                android:text="Nome da lista"
+                android:text="@string/list_name"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:layout_marginBottom="4dp"
@@ -42,7 +43,7 @@
             <TextView
                 android:id="@+id/tvListDescription"
                 android:elevation="2dp"
-                android:text="Descrição da lista"
+                android:text="@string/list_description"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:layout_width="match_parent"
@@ -87,6 +88,7 @@
             <ImageView
                 android:id="@+id/ivUrgentIcon"
                 android:src="@drawable/ic_error_outline_black_24dp"
+                android:layout_marginRight="2dp"
                 android:layout_width="24dp"
                 android:layout_height="24dp" />
 

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import me.gmcardoso.listpad.adapter.ItemAdapter
 import me.gmcardoso.listpad.database.DatabaseHandler
@@ -33,9 +32,6 @@ class ListActivity : AppCompatActivity() {
         itemDAO = ItemDAO(databaseHandler)
         listDAO = ListDAO(databaseHandler)
 
-        val listName = this.intent.getStringExtra("listName")
-        activityListBinding.tvTitle.text = listName
-
         updateUI()
     }
 
@@ -48,8 +44,9 @@ class ListActivity : AppCompatActivity() {
         val listId = this.intent.getIntExtra("listId", 0)
 
         val list = listDAO.get(listId)
-        Log.d("EXISTE?", list.toString())
         if(list == null) finish()
+
+        activityListBinding.tvTitle.text = list!!.name
 
         items = itemDAO.getByList(listId)
         itemAdapter = ItemAdapter(items)
@@ -57,7 +54,6 @@ class ListActivity : AppCompatActivity() {
         activityListBinding.rvItems.layoutManager = LinearLayoutManager(this)
         activityListBinding.rvItems.adapter = itemAdapter
 
-        activityListBinding.ivDeleteIcon.setOnClickListener { showDeleteListDialog() }
         activityListBinding.ivEditIcon.setOnClickListener { showUpdateScreen() }
 
         val listener = object: ItemAdapter.ItemListener {
@@ -105,9 +101,9 @@ class ListActivity : AppCompatActivity() {
 
         if(existingItems.size > 0) {
             AlertDialog.Builder(this)
-                .setTitle("Ação indisponível")
-                .setMessage("Não é possivel criar itens com descrição repetida, favor alterar o item a ser criado.")
-                .setNeutralButton("Entendi", null)
+                .setTitle(getString(R.string.unavailable_action))
+                .setMessage(getString(R.string.items_with_same_description_message))
+                .setNeutralButton(getString(R.string.understood), null)
                 .show()
             return
         }
@@ -127,9 +123,9 @@ class ListActivity : AppCompatActivity() {
 
         if(existingItems.size > 0) {
             AlertDialog.Builder(this)
-                .setTitle("Ação indisponível")
-                .setMessage("Não é possivel criar itens com descrição repetida, favor alterar o item a ser criado.")
-                .setNeutralButton("Entendi", null)
+                .setTitle(getString(R.string.unavailable_action))
+                .setMessage(getString(R.string.items_with_same_description_message))
+                .setNeutralButton(getString(R.string.understood), null)
                 .show()
             return
         }
@@ -143,22 +139,5 @@ class ListActivity : AppCompatActivity() {
     private fun deleteItem(pos: Int) {
         items[pos].id?.let { itemDAO.delete(it) }
         updateUI()
-    }
-
-    private fun showDeleteListDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Excluir lista")
-            .setMessage("Deseja realmente excluir a lista selecionada?")
-            .setPositiveButton(
-                "Sim"
-            ) { _, _ -> deleteList() }
-            .setNegativeButton("Ní", null)
-            .show()
-    }
-
-    private fun deleteList() {
-        val listId = this.intent.getIntExtra("listId", 0)
-        listDAO.delete(listId)
-        finish()
     }
 }

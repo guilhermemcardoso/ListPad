@@ -1,16 +1,12 @@
 package me.gmcardoso.listpad.database.dao
 
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
-import me.gmcardoso.listpad.model.Category
 import me.gmcardoso.listpad.model.Color
 
 class ColorDAO(private var dbHelper: SQLiteOpenHelper) {
 
     companion object {
         private const val ID = "Id"
-        private const val NAME = "Name"
-        private const val HEX = "Hex"
         private const val TABLE_NAME = "Colors"
     }
 
@@ -39,7 +35,6 @@ class ColorDAO(private var dbHelper: SQLiteOpenHelper) {
             }
         }
         cursor.close()
-        Log.d("COLORS", colors.toString())
         return colors
     }
 }

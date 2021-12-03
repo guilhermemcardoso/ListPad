@@ -2,7 +2,6 @@ package me.gmcardoso.listpad.database.dao
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import me.gmcardoso.listpad.model.Category
 
 class CategoryDAO(private var dbHelper: SQLiteOpenHelper) {
@@ -51,17 +50,16 @@ class CategoryDAO(private var dbHelper: SQLiteOpenHelper) {
             }
         }
         cursor.close()
-        Log.d("CATEGORIES", categories.toString())
         return categories
     }
 
     fun update(category: Category): Boolean {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put(CategoryDAO.NAME, category.name)
-            put(CategoryDAO.COLOR, category.color)
+            put(NAME, category.name)
+            put(COLOR, category.color)
         }
-        val success = db.update(CategoryDAO.TABLE_NAME, values, "${CategoryDAO.ID}=?", arrayOf(category.id.toString())).toLong()
+        val success = db.update(TABLE_NAME, values, "${ID}=?", arrayOf(category.id.toString())).toLong()
         db.close()
         return ("$success").toInt() != -1
     }

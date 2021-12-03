@@ -7,7 +7,16 @@
     android:orientation="vertical"
     tools:context=".CreateOrEditListActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="8dp"
+        android:layout_marginBottom="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -18,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:text="Nova Categoria"
+            android:text="@string/new_category"
             android:textSize="24sp" />
 
         <ImageView
@@ -27,6 +36,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
+            android:padding="4dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -40,7 +50,19 @@
         android:layout_height="wrap_content"
         android:inputType="textCapSentences"
         android:maxLines="1"
-        android:hint="Nome da Categoria" />
+        android:background="@drawable/edit_text_background"
+        android:padding="8dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:hint="@string/category_name" />
+
+        <TextView
+            android:text="@string/choose_color_for_category"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvColors"
@@ -48,24 +70,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancelar" />
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:padding="12dp"
+            app:cornerRadius="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/cancel" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Salvar" />
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:padding="12dp"
+            app:cornerRadius="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/save" />
 
     </LinearLayout>
 

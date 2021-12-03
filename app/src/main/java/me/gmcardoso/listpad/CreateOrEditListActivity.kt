@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import me.gmcardoso.listpad.database.DatabaseHandler
 import me.gmcardoso.listpad.database.dao.CategoryDAO
+import me.gmcardoso.listpad.database.dao.ItemDAO
 import me.gmcardoso.listpad.database.dao.ListDAO
 import me.gmcardoso.listpad.databinding.ActivityCreateOrEditListBinding
 import me.gmcardoso.listpad.model.Category
@@ -17,6 +18,7 @@ class CreateOrEditListActivity : AppCompatActivity() {
     private lateinit var activityCreateOrEditListBinding: ActivityCreateOrEditListBinding
     private lateinit var categoryDAO: CategoryDAO
     private lateinit var listDAO: ListDAO
+    private lateinit var itemDAO: ItemDAO
     private lateinit var databaseHandler: DatabaseHandler
     private lateinit var categories: ArrayList<Category>
     private lateinit var list: List
@@ -29,6 +31,7 @@ class CreateOrEditListActivity : AppCompatActivity() {
         databaseHandler = DatabaseHandler(this)
         categoryDAO = CategoryDAO(databaseHandler)
         listDAO = ListDAO(databaseHandler)
+        itemDAO = ItemDAO(databaseHandler)
 
         activityCreateOrEditListBinding.btnCancel.setOnClickListener {
             cancel()
@@ -52,12 +55,25 @@ class CreateOrEditListActivity : AppCompatActivity() {
         val listCategory = categories[activityCreateOrEditListBinding.spCategories.selectedItemPosition]
 
         if(this::list.isInitialized) {
-            list.name = listName
-            list.description = listDescription
-            list.urgent = listIsUrgent
-            list.categoryId = listCategory.id
-            listDAO.update(list)
-            finish()
+
+            val listWIthSameName = listDAO.getByName(listName)
+            val listWithSameNameAndDifferentId = listWIthSameName.find { it.id != list.id }
+            if(listWithSameNameAndDifferentId != null) {
+                AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.unavailable_action))
+                    .setMessage(getString(R.string.lists_with_same_name_message))
+                    .setNeutralButton(getString(R.string.understood), null)
+                    .show()
+                activityCreateOrEditListBinding.etListName.requestFocus()
+            } else {
+                list.name = listName
+                list.description = listDescription
+                list.urgent = listIsUrgent
+                list.categoryId = listCategory.id
+                listDAO.update(list)
+                finish()
+            }
+
         } else {
             val newList = List(null, listName, listDescription, listIsUrgent, listCategory.id)
 
@@ -65,9 +81,9 @@ class CreateOrEditListActivity : AppCompatActivity() {
 
             if(listWIthSameName.size > 0) {
                 AlertDialog.Builder(this)
-                    .setTitle("Ação indisponível")
-                    .setMessage("Não é possivel criar listas com nome repetido, favor alterar o nome da lista a ser criada.")
-                    .setNeutralButton("Entendi", null)
+                    .setTitle(getString(R.string.unavailable_action))
+                    .setMessage(getString(R.string.lists_with_same_name_message))
+                    .setNeutralButton(getString(R.string.understood), null)
                     .show()
                 activityCreateOrEditListBinding.etListName.requestFocus()
             } else {
@@ -89,6 +105,7 @@ class CreateOrEditListActivity : AppCompatActivity() {
 
         if(listId != 0) {
             list = listDAO.get(listId)!!
+            activityCreateOrEditListBinding.tvTitle.text = resources.getString(R.string.edit_list)
         } else {
             activityCreateOrEditListBinding.ivDeleteIcon.visibility = View.GONE
         }
@@ -100,18 +117,19 @@ class CreateOrEditListActivity : AppCompatActivity() {
 
     private fun showDeleteListDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Excluir lista")
-            .setMessage("Deseja realmente excluir a lista selecionada?")
+            .setTitle(getString(R.string.delete_list))
+            .setMessage(getString(R.string.delete_list_confirmation_message))
             .setPositiveButton(
-                "Sim"
+                getString(R.string.yes)
             ) { _, _ -> deleteList() }
-            .setNegativeButton("Ní", null)
+            .setNegativeButton(getString(R.string.no), null)
             .show()
     }
 
     private fun deleteList() {
         val listId = this.intent.getIntExtra("listId", 0)
         listDAO.delete(listId)
+        itemDAO.deleteByList(listId)
         finish()
     }
 
