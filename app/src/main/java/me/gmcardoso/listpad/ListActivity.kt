@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import me.gmcardoso.listpad.adapter.ItemAdapter
 import me.gmcardoso.listpad.database.DatabaseHandler
@@ -44,39 +45,42 @@ class ListActivity : AppCompatActivity() {
         val listId = this.intent.getIntExtra("listId", 0)
 
         val list = listDAO.get(listId)
+        Log.d("TESTE", if(list == null) "LIST IS NULL" else list.toString())
         if(list == null) finish()
 
-        activityListBinding.tvTitle.text = list!!.name
+        if(list != null) {
+            activityListBinding.tvTitle.text = list!!.name
 
-        items = itemDAO.getByList(listId)
-        itemAdapter = ItemAdapter(items)
+            items = itemDAO.getByList(listId)
+            itemAdapter = ItemAdapter(items)
 
-        activityListBinding.rvItems.layoutManager = LinearLayoutManager(this)
-        activityListBinding.rvItems.adapter = itemAdapter
+            activityListBinding.rvItems.layoutManager = LinearLayoutManager(this)
+            activityListBinding.rvItems.adapter = itemAdapter
 
-        activityListBinding.ivEditIcon.setOnClickListener { showUpdateScreen() }
+            activityListBinding.ivEditIcon.setOnClickListener { showUpdateScreen() }
 
-        val listener = object: ItemAdapter.ItemListener {
+            val listener = object: ItemAdapter.ItemListener {
 
-            override fun onItemCheck(pos: Int) {
-                completeItem(pos)
-            }
+                override fun onItemCheck(pos: Int) {
+                    completeItem(pos)
+                }
 
-            override fun onItemDelete(pos: Int) {
-                deleteItem(pos)
-            }
+                override fun onItemDelete(pos: Int) {
+                    deleteItem(pos)
+                }
 
-            override fun onItemCreateOrUpdate(pos: Int, description: String) {
+                override fun onItemCreateOrUpdate(pos: Int, description: String) {
 
-                if(pos < items.size) {
-                    updateItem(pos, description)
-                } else {
-                    createItem(description)
+                    if(pos < items.size) {
+                        updateItem(pos, description)
+                    } else {
+                        createItem(description)
+                    }
                 }
             }
-        }
 
-        itemAdapter.setOnClickListener(listener)
+            itemAdapter.setOnClickListener(listener)
+        }
     }
 
     private fun showUpdateScreen() {
